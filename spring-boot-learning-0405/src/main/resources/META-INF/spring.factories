@@ -1,0 +1,7 @@
+org.springframework.context.ApplicationListener=\
+com.zhuweiwei.springbootlearning0405.applicationlistener.ApplicationStartingEventListener,\
+com.zhuweiwei.springbootlearning0405.applicationlistener.ContextRefreshedEventListener
+org.springframework.context.ApplicationContextInitializer=\
+com.zhuweiwei.springbootlearning0405.applicationContextInitializer.MyApplicationContextInitializer
+org.springframework.boot.SpringApplicationRunListener=\
+com.zhuweiwei.springbootlearning0405.springApplicationRunListener.MySpringApplicationRunListener

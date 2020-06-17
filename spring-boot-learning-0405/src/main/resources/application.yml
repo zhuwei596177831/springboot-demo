@@ -1,0 +1,128 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /main
+  address: 127.0.0.1
+debug: false
+spring:
+  mvc:
+    static-path-pattern: static/**
+  profiles:
+    active: @profile.active@
+  resources:
+    static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources,file:${file.uploadFolder}
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: 100MB
+  freemarker:
+    suffix: .ftl
+    request-context-attribute: request
+    cache: false
+    #druid数据库连接池
+  datasource:
+    druid:
+      initial-size: 5
+      min-idle: 10
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 2000
+      min-evictable-idle-time-millis: 600000
+      max-evictable-idle-time-millis: 900000
+      validation-query: "select 1"
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      keep-alive: true
+      phy-max-use-count: 500
+      filter:
+        stat:
+          enabled: true
+          slow-sql-millis: 3000
+          log-slow-sql: true
+        slf4j:
+          enabled: true
+          result-set-log-enabled: false
+          connection-log-enabled: false
+          statement-log-enabled: true
+          statement-executable-sql-log-enable: true
+          statement-execute-query-after-log-enabled: false
+          statement-execute-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          statement-create-after-log-enabled: false
+          statement-prepare-call-after-log-enabled: false
+          statement-parameter-set-log-enabled: false
+      stat-view-servlet:
+        enabled: true
+        login-username: zww
+        login-password: zww
+        allow: 127.0.0.1
+    type: com.alibaba.druid.pool.DruidDataSource
+  http:
+    encoding:
+      enabled:
+  messages:
+    basename: i18n.login
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  cache:
+    ehcache:
+      config: classpath:my-ehcache.xml
+  rabbitmq:
+    host: 127.0.0.1
+    username: guest
+    password: guest
+    port: 5672
+my:
+  emails:
+    - 59617781@qq.com
+    - 1433454197@qq.com
+  project-name: zww
+logging:
+  level:
+    root: debug
+    org: info
+    net: warn
+    sun: info
+    freemarker: info
+    netty: warn
+    buji: warn
+    com:
+      baomidou:
+        mybatisplus: info
+file:
+  uploadFolder: /home/pic/
+yaml-test:
+  name: 朱伟伟
+  age: 26
+  date: 2020/04/06
+  list:
+    - 111
+    - 222
+    - 333
+  map:
+    s1: 444
+    s2: 555
+  yaml-inner-class:
+    name: 美月莉亚
+    age: 30
+#mybatis与pagehelper整合
+#mybatis:
+#  mapper-locations: classpath:mybatis/**/*.xml
+#  configuration:
+#    map-underscore-to-camel-case: true
+pagehelper:
+  support-methods-arguments: true
+  reasonable: true
+  auto-dialect: true
+  offset-as-page-num: true
+mybatis-plus:
+  mapper-locations: classpath:mybatis/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: false
+  global-config:
+    db-config:
+      id-type: assign_id
