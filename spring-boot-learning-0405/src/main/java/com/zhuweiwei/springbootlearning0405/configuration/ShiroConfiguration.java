@@ -76,6 +76,7 @@ public class ShiroConfiguration {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager());
         Map<String, String> filterChainDefinitionMap = shiroFilterFactoryBean.getFilterChainDefinitionMap();
+        filterChainDefinitionMap.put("/file/**", "anon");
         filterChainDefinitionMap.put("/static/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/login", "anon");
