@@ -42,16 +42,6 @@ spring:
           log-slow-sql: true
         slf4j:
           enabled: true
-          result-set-log-enabled: false
-          connection-log-enabled: false
-          statement-log-enabled: true
-          statement-executable-sql-log-enable: true
-          statement-execute-query-after-log-enabled: false
-          statement-execute-after-log-enabled: false
-          statement-close-after-log-enabled: false
-          statement-create-after-log-enabled: false
-          statement-prepare-call-after-log-enabled: false
-          statement-parameter-set-log-enabled: false
       stat-view-servlet:
         enabled: true
         login-username: zww
@@ -76,6 +66,11 @@ spring:
     username: guest
     password: guest
     port: 5672
+  jackson:
+    date-format: yyyy/MM/dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      INDENT_OUTPUT: true
 my:
   emails:
     - 59617781@qq.com
@@ -83,16 +78,7 @@ my:
   project-name: zww
 logging:
   level:
-    root: debug
-    org: info
-    net: warn
-    sun: info
-    freemarker: info
-    netty: warn
-    buji: warn
-    com:
-      baomidou:
-        mybatisplus: info
+    com.zhuweiwei.springbootlearning0405.mapper: debug
 file:
   uploadFolder: /home/pic/
 yaml-test:

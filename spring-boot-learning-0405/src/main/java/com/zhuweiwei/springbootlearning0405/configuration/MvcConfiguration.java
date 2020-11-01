@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -57,24 +58,24 @@ public class MvcConfiguration implements WebMvcConfigurer {
         return filterRegistrationBean;
     }
 
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        List<HttpMessageConverter<?>> httpMessageConverterList = converters;
-        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializerFeatures(
-                SerializerFeature.PrettyFormat,
-                SerializerFeature.WriteMapNullValue,
-                SerializerFeature.WriteNullStringAsEmpty,
-                SerializerFeature.WriteNullListAsEmpty);
-        List<MediaType> mediaTypes = new ArrayList<>();
-        mediaTypes.add(MediaType.APPLICATION_JSON);
-        fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
-        fastJsonHttpMessageConverter.setSupportedMediaTypes(mediaTypes);
-        converters.clear();
-        converters.add(fastJsonHttpMessageConverter);
-        converters.addAll(httpMessageConverterList);
-    }
+//    @Override
+//    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+//        List<HttpMessageConverter<?>> httpMessageConverterList = converters;
+//        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
+//        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+//        fastJsonConfig.setSerializerFeatures(
+//                SerializerFeature.PrettyFormat,
+//                SerializerFeature.WriteMapNullValue,
+//                SerializerFeature.WriteNullStringAsEmpty,
+//                SerializerFeature.WriteNullListAsEmpty);
+//        List<MediaType> mediaTypes = new ArrayList<>();
+//        mediaTypes.add(MediaType.APPLICATION_JSON);
+//        fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
+//        fastJsonHttpMessageConverter.setSupportedMediaTypes(mediaTypes);
+//        converters.clear();
+//        converters.add(fastJsonHttpMessageConverter);
+//        converters.addAll(httpMessageConverterList);
+//    }
 
 //    @Bean
 //    public HttpMessageConverter httpMessageConverter() {
