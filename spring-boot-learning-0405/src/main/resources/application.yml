@@ -83,16 +83,7 @@ my:
   project-name: zww
 logging:
   level:
-    root: debug
-    org: info
-    net: warn
-    sun: info
-    freemarker: info
-    netty: warn
-    buji: warn
-    com:
-      baomidou:
-        mybatisplus: info
+    com.zhuweiwei.springbootlearning0405.mapper: debug
 file:
   uploadFolder: /home/pic/
 yaml-test:

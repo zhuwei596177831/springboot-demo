@@ -1,6 +1,8 @@
 package com.zhuweiwei.springbootlearning0405.configuration;
 
-import com.zhuweiwei.springbootlearning0405.listener.MySessionListener;
+import com.zhuweiwei.springbootlearning0405.web.filter.CheckFilter;
+import com.zhuweiwei.springbootlearning0405.web.filter.TestWebFilter;
+import com.zhuweiwei.springbootlearning0405.web.listener.MySessionListener;
 import com.zhuweiwei.springbootlearning0405.realm.UserNamePasswordRealm;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.RememberMeManager;
@@ -14,6 +16,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +26,7 @@ import shiroFilter.AccessVisitFilter;
 import shiroFilter.MyLogoutFilter;
 
 import javax.servlet.Filter;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zww
@@ -83,15 +84,41 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/logout", "myLogout");
         filterChainDefinitionMap.put("/order/**", "authc");
         filterChainDefinitionMap.put("/permissionTest", "authc,perms[user:add]");
+        filterChainDefinitionMap.put("/app/**", "checkFilter");
         filterChainDefinitionMap.put("/**", "accessVisit");
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
         AccessVisitFilter accessVisitFilter = new AccessVisitFilter();
         MyLogoutFilter myLogoutFilter = new MyLogoutFilter();
         filters.put("accessVisit", accessVisitFilter);
         filters.put("myLogout", myLogoutFilter);
+        filters.put("checkFilter", checkFilter());
         shiroFilterFactoryBean.setLoginUrl("/login");
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
         return shiroFilterFactoryBean;
+    }
+
+
+    /**
+     * @author: 朱伟伟
+     * @date: 2020-12-11 17:33
+     * @description: 直接添加filter bean时,CheckFilter执行了两次
+     * CheckFilter doFilter
+     * CheckFilter doFilter
+     **/
+    @Bean
+    public CheckFilter checkFilter() {
+        return new CheckFilter();
+    }
+
+    @Bean
+    public FilterRegistrationBean<CheckFilter> checkFilterFilterRegistrationBean() {
+        FilterRegistrationBean<CheckFilter> checkFilterFilterRegistrationBean = new FilterRegistrationBean<>(checkFilter());
+        //设置为false CheckFilter正常执行一次
+        checkFilterFilterRegistrationBean.setEnabled(false);
+        List<String> urlPatterns = new ArrayList<>();
+        urlPatterns.add("/checkFilter");
+        checkFilterFilterRegistrationBean.setUrlPatterns(urlPatterns);
+        return checkFilterFilterRegistrationBean;
     }
 
     @Bean

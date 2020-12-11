@@ -1,27 +1,27 @@
-package com.zhuweiwei.springbootlearning0405.servlet;
+package com.zhuweiwei.springbootlearning0405.web.servlet;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
- * @author zww
- * @date 2020-04-06 13:15
+ * @author 朱伟伟
+ * @date 2020-12-11 18:34:33
  * @description
- **/
-public class TestServlet extends HttpServlet {
+ */
+@WebServlet(name = "testWebServlet", urlPatterns = {"/testWebServlet"})
+public class TestWebServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setCharacterEncoding("utf-8");
-        PrintWriter writer = resp.getWriter();
-        writer.write(req.getContextPath());
+        super.doGet(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doGet(req, resp);
+        super.doPost(req, resp);
     }
 }

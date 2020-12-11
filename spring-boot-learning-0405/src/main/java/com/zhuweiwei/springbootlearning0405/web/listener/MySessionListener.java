@@ -1,4 +1,4 @@
-package com.zhuweiwei.springbootlearning0405.listener;
+package com.zhuweiwei.springbootlearning0405.web.listener;
 
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListener;
