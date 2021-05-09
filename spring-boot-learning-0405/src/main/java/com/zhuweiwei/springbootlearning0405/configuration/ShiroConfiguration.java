@@ -35,26 +35,79 @@ import java.util.Map;
 @Configuration
 public class ShiroConfiguration {
 
-    @Bean
-    public SimpleCookie simpleCookie() {
-        SimpleCookie simpleCookie = new SimpleCookie();
-        //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
-        simpleCookie.setName("rememberMeCookie");
-        simpleCookie.setHttpOnly(true);
-        //记住我cookie生效时间30天 ,单位秒
-        simpleCookie.setMaxAge(2592000);
-        //-1：浏览器关闭即失效
-//        simpleCookie.setMaxAge(-1);
-        return simpleCookie;
-    }
-
+    /**
+     * @author: 朱伟伟
+     * @date: 2021-05-09 19:11
+     * @description: 自定义 {@link RememberMeManager}{@link SimpleCookie}
+     * 用于记住我登录 shiro默认有提供
+     * @see DefaultWebSecurityManager
+     **/
     @Bean
     public RememberMeManager rememberMeManager() {
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
-        cookieRememberMeManager.setCookie(simpleCookie());
+        SimpleCookie simpleCookie = new SimpleCookie();
+        simpleCookie.setName("shiroRememberMeCookie");
+        simpleCookie.setHttpOnly(true);
+        //自定义记住我登录的cookie生效时间30天 ,单位秒
+        simpleCookie.setMaxAge(2592000);
+//        -1：浏览器关闭即失效
+//        simpleCookie.setMaxAge(-1);
+        cookieRememberMeManager.setCookie(simpleCookie);
         //rememberMe cookie加密的密钥 建议每个项目都不一样 默认AES算法 密钥长度(128 256 512 位)
         cookieRememberMeManager.setCipherKey(Base64.getDecoder().decode("2AvVhdsgUs0FSA3SDFAdag=="));
         return cookieRememberMeManager;
+    }
+
+    /**
+     * @author: 朱伟伟
+     * @date: 2021-05-09 20:33
+     * @description: session持久化 用于同一用户不同浏览器登录  互踢功能
+     **/
+    @Bean
+    public EnterpriseCacheSessionDAO enterpriseCacheSessionDAO() {
+        EnterpriseCacheSessionDAO enterpriseCacheSessionDAO = new EnterpriseCacheSessionDAO();
+        enterpriseCacheSessionDAO.setActiveSessionsCacheName("shiro-activeSessionCache");
+        return enterpriseCacheSessionDAO;
+    }
+
+    /**
+     * cacheManager多次创建报错问题：
+     * 修改的地方一共有三处，它们是：
+     * 配置EhcacheManagerFactoryBean并设置其为共享模式，
+     * 配置DefaultAdvisorAutoProxyCreator，让Spring 来管理Shiro的Bean生命周期，
+     * 配置lifecycleBeanPostProcessor，并让DefaultAdvisorAutoProxyCreator依赖于此对象。
+     */
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
+        EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
+        ehCacheManagerFactoryBean.setShared(true);
+        return ehCacheManagerFactoryBean;
+    }
+
+    /**
+     * @author: 朱伟伟
+     * @date: 2021-05-09 22:23
+     * @description: 设置会话cookie超时时间和session超时时间后，关闭浏览器重新打开  依然可以进入目标页面
+     * 相当于间接的实现了记住我功能
+     **/
+    @Bean
+    public DefaultWebSessionManager defaultWebSessionManager() {
+        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
+        //自定义shiro管理回话的cookie 默认有提供 名称：JSESSIONID 存活时间 -1 浏览器关闭 即失效
+        SimpleCookie shiroSessionId = new SimpleCookie("shiroSessionIdCookie");
+//        shiroSessionId.setMaxAge(2 * 60);//两分钟
+        defaultWebSessionManager.setSessionIdCookie(shiroSessionId);
+        //设置会话超时时间 默认30分钟
+//        defaultWebSessionManager.setGlobalSessionTimeout(2 * 60 * 1000);//两分钟
+        defaultWebSessionManager.setSessionValidationSchedulerEnabled(true);
+        defaultWebSessionManager.setSessionValidationInterval(600000);
+//        defaultWebSessionManager.setSessionValidationInterval(10000);
+        Collection<SessionListener> sessionListeners = new ArrayList<>();
+        MySessionListener mySessionListener = new MySessionListener();
+        sessionListeners.add(mySessionListener);
+        defaultWebSessionManager.setSessionListeners(sessionListeners);
+        defaultWebSessionManager.setSessionDAO(enterpriseCacheSessionDAO());
+        return defaultWebSessionManager;
     }
 
     @Bean
@@ -99,38 +152,6 @@ public class ShiroConfiguration {
     @Bean
     public UserNamePasswordRealm userNamePasswordRealm() {
         return new UserNamePasswordRealm();
-    }
-
-    @Bean
-    public DefaultWebSessionManager defaultWebSessionManager() {
-        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
-        defaultWebSessionManager.setGlobalSessionTimeout(1800000);
-//        defaultWebSessionManager.setGlobalSessionTimeout(60000);
-        defaultWebSessionManager.setSessionValidationSchedulerEnabled(true);
-        defaultWebSessionManager.setSessionValidationInterval(600000);
-//        defaultWebSessionManager.setSessionValidationInterval(10000);
-        Collection<SessionListener> sessionListeners = new ArrayList<>();
-        MySessionListener mySessionListener = new MySessionListener();
-        sessionListeners.add(mySessionListener);
-        defaultWebSessionManager.setSessionListeners(sessionListeners);
-        EnterpriseCacheSessionDAO enterpriseCacheSessionDAO = new EnterpriseCacheSessionDAO();
-        enterpriseCacheSessionDAO.setActiveSessionsCacheName("shiro-activeSessionCache");
-        defaultWebSessionManager.setSessionDAO(enterpriseCacheSessionDAO);
-        return defaultWebSessionManager;
-    }
-
-    /**
-     * cacheManager多次创建报错问题：
-     * 修改的地方一共有三处，它们是：
-     * 配置EhcacheManagerFactoryBean并设置其为共享模式，
-     * 配置DefaultAdvisorAutoProxyCreator，让Spring 来管理Shiro的Bean生命周期，
-     * 配置lifecycleBeanPostProcessor，并让DefaultAdvisorAutoProxyCreator依赖于此对象。
-     */
-    @Bean
-    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
-        EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
-        ehCacheManagerFactoryBean.setShared(true);
-        return ehCacheManagerFactoryBean;
     }
 
     /**

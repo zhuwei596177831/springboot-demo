@@ -45,7 +45,7 @@ public class AccessVisitFilter extends AccessControlFilter {
     }
 
     private void responseJson(Result result, HttpServletResponse response) {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         PrintWriter writer = null;
         try {
             writer = response.getWriter();

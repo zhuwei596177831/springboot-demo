@@ -8,7 +8,7 @@ import com.zhuweiwei.springbootlearning0405.bean.LoginUser;
  * @description
  **/
 public interface LoginUserService {
-    LoginUser getByLoginName(String username);
+    LoginUser getByLoginId(String loginId);
 
     Integer addLoginUser(LoginUser loginUser);
 }

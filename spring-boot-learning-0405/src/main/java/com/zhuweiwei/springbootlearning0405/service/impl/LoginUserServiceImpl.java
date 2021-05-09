@@ -19,7 +19,7 @@ public class LoginUserServiceImpl implements LoginUserService {
     LoginUserMapper loginUserMapper;
 
     @Override
-    public LoginUser getByLoginName(String username) {
+    public LoginUser getByLoginId(String username) {
         QueryWrapper<LoginUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("loginId", username);
         return loginUserMapper.selectOne(queryWrapper);
