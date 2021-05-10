@@ -2,7 +2,13 @@ package com.zhuweiwei.springbootlearning0405.configuration;
 
 import com.zhuweiwei.springbootlearning0405.listener.MySessionListener;
 import com.zhuweiwei.springbootlearning0405.realm.UserNamePasswordRealm;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authc.credential.Md5CredentialsMatcher;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.crypto.hash.AbstractHash;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.SessionListener;
@@ -14,18 +20,19 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.util.DigestUtils;
+import org.springframework.util.StringValueResolver;
 import shiroFilter.AccessVisitFilter;
 import shiroFilter.MyLogoutFilter;
 
 import javax.servlet.Filter;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zww
@@ -33,7 +40,9 @@ import java.util.Map;
  * @description
  **/
 @Configuration
-public class ShiroConfiguration {
+public class ShiroConfiguration implements EmbeddedValueResolverAware {
+
+    private int hashIterations;
 
     /**
      * @author: 朱伟伟
@@ -151,7 +160,11 @@ public class ShiroConfiguration {
 
     @Bean
     public UserNamePasswordRealm userNamePasswordRealm() {
-        return new UserNamePasswordRealm();
+        UserNamePasswordRealm userNamePasswordRealm = new UserNamePasswordRealm();
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher(Md5Hash.ALGORITHM_NAME);
+        hashedCredentialsMatcher.setHashIterations(hashIterations);
+        userNamePasswordRealm.setCredentialsMatcher(hashedCredentialsMatcher);
+        return userNamePasswordRealm;
     }
 
     /**
@@ -179,4 +192,16 @@ public class ShiroConfiguration {
         return defaultAdvisorAutoProxyCreator;
     }
 
+    public static void main(String[] args) {
+//        System.out.println(DigestUtils.md5DigestAsHex(DigestUtils.md5DigestAsHex("000000".getBytes()).getBytes()));
+//        System.out.println(DigestUtils.md5DigestAsHex("000000".getBytes()));
+//        System.out.println(new SimpleHash(Md5Hash.ALGORITHM_NAME, "000000", null, 1).toHex());
+//        System.out.println(new SimpleHash(Md5Hash.ALGORITHM_NAME, "000000", null, 2).toHex());
+//        System.out.println(new SimpleHash(Md5Hash.ALGORITHM_NAME, "000000", null, 3).toHex());
+    }
+
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        hashIterations = Integer.parseInt(Objects.requireNonNull(resolver.resolveStringValue("${md5Param.hashIterations}")));
+    }
 }

@@ -15,6 +15,7 @@ import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
@@ -29,6 +30,9 @@ import java.util.Set;
  * @description
  **/
 public class UserNamePasswordRealm extends AuthorizingRealm {
+
+    @Value("${md5Param.salt}")
+    private String salt;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -62,9 +66,9 @@ public class UserNamePasswordRealm extends AuthorizingRealm {
         if (loginUser == null) {
             throw new UnknownAccountException();
         }
-        if (!DigestUtils.md5DigestAsHex(password.getBytes()).equals(loginUser.getPassword())) {
-            throw new IncorrectCredentialsException();
-        }
+//        if (!DigestUtils.md5DigestAsHex(password.getBytes()).equals(loginUser.getPassword())) {
+//            throw new IncorrectCredentialsException();
+//        }
         //同一用户不同浏览器登录  互踢功能 原理：(删除之前用户登录生成的session使其subject isAuthenticated认证失败)
         Collection<Session> activeSessions = enterpriseCacheSessionDAO.getActiveSessions();
         if (!CollectionUtils.isEmpty(activeSessions)) {
@@ -82,6 +86,7 @@ public class UserNamePasswordRealm extends AuthorizingRealm {
                 }
             }
         }
-        return new SimpleAuthenticationInfo(loginUser, password, getName());
+//        return new SimpleAuthenticationInfo(loginUser, DigestUtils.md5DigestAsHex(password.getBytes()), getName());
+        return new SimpleAuthenticationInfo(loginUser, loginUser.getPassword(), getName());
     }
 }

@@ -112,3 +112,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: assign_id
+md5Param:
+  hashIterations: 3
+  salt: zhuweiwei
