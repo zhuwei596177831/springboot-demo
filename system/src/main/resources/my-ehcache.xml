@@ -1,0 +1,68 @@
+<ehcache updateCheck="false" dynamicConfig="false">
+    <diskStore path="java.io.tmpdir"/>
+    <!--
+    各配置参数的含义：
+　　maxElementsInMemory：缓存中允许创建的最大对象数
+　　maxElementsOnDisk:磁盘中允许的最多对象数
+　　eternal：缓存中对象是否为永久的，如果是，超时设置将被忽略，对象从不过期。
+　　timeToIdleSeconds：缓存数据的钝化时间，也就是在一个元素消亡之前，两次访问时间的最大时间间隔值，这只能在元素不是永久驻留时有效，
+    如果该值是0 就意味着元素可以停顿无穷长的时间。
+　　timeToLiveSeconds：缓存数据的生存时间，也就是一个元素从构建到消亡的最大时间间隔值，
+    这只能在元素不是永久驻留时有效，如果该值是0就意味着元素可以停顿无穷长的时间。
+　　overflowToDisk：内存不足时，是否启用磁盘缓存。
+　　diskPersistent 是否持久化磁盘缓存,当这个属性的值为true时,系统在初始化时会在磁盘中查找文件名为cache名称,后缀名为data的文件。
+    指重启jvm后，数据是否有效。默认为false。
+　　memoryStoreEvictionPolicy：缓存满了之后的淘汰算法。
+　　如果应用需要配置多个不同命名并采用不同参数的Cache，可以相应修改配置文件，增加需要的Cache配置即可。
+    两个时间的详细解释:
+　　timeToLiveSeconds 当对象自从被存放到缓存中后，如果处于缓存中的时间超过了timeToLiveSeconds属性值,这个对象就会过期，
+    EHCache将把它从缓存中清除；即缓存自创建日期起能够存活的最长时间，单位为秒(s)
+    timeToIdleSeconds当对象自从最近一次被访问后，如果处于空闲状态的时间超过了timeToIdleSeconds属性值，
+    这个对象就会过期，EHCache将把它从缓存中清空；即缓存被创建后，最后一次访问时间到缓存失效之时，两者之间的间隔，单位为秒(s)
+    timeToLiveSeconds必须大于timeToIdleSeconds才有意义。
+
+
+    LRU - least recently used（最近最少使用）
+    LFU - least frequently used（最不经常使用）
+    FIFO - first in first out, the oldest element by creation time（清除最早缓存的数据，不关心是否经常使用）
+    CLOCK - FIFO - first in first out, the oldest element by creation time.(与FIFO一样)
+    -->
+    <defaultCache
+            maxElementsInMemory="1000"
+            eternal="false"
+            overflowToDisk="true"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <cache name="testInfo"
+           maxElementsInMemory="2"
+           eternal="false"
+           overflowToDisk="true"
+           timeToIdleSeconds="60"
+           timeToLiveSeconds="60"
+           diskPersistent="false"
+           memoryStoreEvictionPolicy="FIFO"
+           maxElementsOnDisk="2"
+    />
+    <cache name="getTestListByCondition"
+           maxElementsInMemory="2"
+           eternal="false"
+           overflowToDisk="true"
+           timeToIdleSeconds="60"
+           timeToLiveSeconds="60"
+           diskPersistent="false"
+           memoryStoreEvictionPolicy="FIFO"
+           maxElementsOnDisk="2"
+    />
+    <cache name="shiro-activeSessionCache"
+           maxEntriesLocalHeap="10000"
+           overflowToDisk="false"
+           eternal="false"
+           diskPersistent="false"
+           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           statistics="true"/>
+</ehcache>

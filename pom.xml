@@ -10,10 +10,21 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+    <modules>
+        <module>main</module>
+        <module>system</module>
+        <module>shiro-authenticated</module>
+        <module>api</module>
+    </modules>
+
     <groupId>com.zhuweiwei</groupId>
     <artifactId>spring-boot-learning</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 
 
     <dependencyManagement>
@@ -94,17 +105,39 @@
                 <artifactId>jquery-form</artifactId>
                 <version>4.2.2</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.fasterxml.jackson.dataformat</groupId>-->
-<!--                <artifactId>jackson-dataformat-xml</artifactId>-->
-<!--                <version>2.10.3</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-web</artifactId>
+                <version>1.5.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>5.2.5.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>5.2.5.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>3.3.1</version>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>com.fasterxml.jackson.dataformat</groupId>-->
+            <!--                <artifactId>jackson-dataformat-xml</artifactId>-->
+            <!--                <version>2.10.3</version>-->
+            <!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
-
-    <modules>
-        <module>spring-boot-learning-0405</module>
-    </modules>
 
     <profiles>
         <profile>

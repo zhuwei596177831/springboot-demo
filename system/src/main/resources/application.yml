@@ -1,0 +1,35 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /system
+  address: 127.0.0.1
+debug: false
+spring:
+  mvc:
+    static-path-pattern: static/**
+  profiles:
+    active: @profile.active@
+  resources:
+    static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources,file:${file.uploadFolder}
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: 100MB
+  freemarker:
+    suffix: .ftl
+    request-context-attribute: request
+    cache: false
+    #druid\u6570\u636E\u5E93\u8FDE\u63A5\u6C60
+  http:
+    encoding:
+      enabled:
+  messages:
+    basename: i18n.login
+  cache:
+    ehcache:
+      config: classpath:my-ehcache.xml
+file:
+  uploadFolder: /home/pic/
+md5Param:
+  hashIterations: 3
+  salt: zhuweiwei
