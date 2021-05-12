@@ -6,7 +6,12 @@ import com.zhuweiwei.shiro.filter.MyLogoutFilter;
 import com.zhuweiwei.shiro.MySessionListener;
 import com.zhuweiwei.shiro.realm.CustomTokenRealm;
 import com.zhuweiwei.shiro.realm.UserNamePasswordRealm;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authc.pam.AbstractAuthenticationStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -113,13 +118,24 @@ public class ShiroConfiguration implements EmbeddedValueResolverAware {
         MySessionListener mySessionListener = new MySessionListener();
         sessionListeners.add(mySessionListener);
         defaultWebSessionManager.setSessionListeners(sessionListeners);
-        defaultWebSessionManager.setSessionDAO(enterpriseCacheSessionDAO());
+        //自定义SessionDao生成sessionId、读取session、update、delete session
+//        defaultWebSessionManager.setSessionDAO(enterpriseCacheSessionDAO());
         return defaultWebSessionManager;
     }
 
     @Bean
     public DefaultWebSecurityManager defaultWebSecurityManager() {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
+        //自定义认证策略 解决多realm认证时 抛出的异常信息被覆盖
+        ModularRealmAuthenticator modularRealmAuthenticator = new ModularRealmAuthenticator();
+        modularRealmAuthenticator.setAuthenticationStrategy(new AbstractAuthenticationStrategy() {
+            @Override
+            public AuthenticationInfo afterAttempt(Realm realm, AuthenticationToken token, AuthenticationInfo singleRealmInfo, AuthenticationInfo aggregateInfo, Throwable t) throws AuthenticationException {
+                return aggregateInfo;
+            }
+        });
+        defaultWebSecurityManager.setAuthenticator(modularRealmAuthenticator);
+//        ModularRealmAuthenticator modularRealmAuthenticator = (ModularRealmAuthenticator) defaultWebSecurityManager.getAuthenticator();
         defaultWebSecurityManager.setSessionManager(defaultWebSessionManager());
         Collection<Realm> realms = new ArrayList<>();
         realms.add(userNamePasswordRealm());

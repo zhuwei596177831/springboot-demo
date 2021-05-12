@@ -9,7 +9,9 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -41,8 +43,10 @@ public class UserNamePasswordRealm extends AuthorizingRealm {
 
     @Autowired(required = false)
     LoginUserService loginUserService;
+    //    @Autowired(required = false)
+//    EnterpriseCacheSessionDAO enterpriseCacheSessionDAO;
     @Autowired(required = false)
-    EnterpriseCacheSessionDAO enterpriseCacheSessionDAO;
+    DefaultSessionManager defaultSessionManager;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -70,7 +74,12 @@ public class UserNamePasswordRealm extends AuthorizingRealm {
 //            throw new IncorrectCredentialsException();
 //        }
         //同一用户不同浏览器登录  互踢功能 原理：(删除之前用户登录生成的session使其subject isAuthenticated认证失败)
-        Collection<Session> activeSessions = enterpriseCacheSessionDAO.getActiveSessions();
+        //同一浏览器不同用户登录 给出提示 原理：(同一浏览器 认证时 还未重新写出cookie header里是之前的cookie
+        // 此处获取的subject和SimpleSession是同一个)
+//        Collection<Session> activeSessions = enterpriseCacheSessionDAO.getActiveSessions();
+        //默认的MemorySessionDAO
+        SessionDAO sessionDAO = defaultSessionManager.getSessionDAO();
+        Collection<Session> activeSessions = sessionDAO.getActiveSessions();
         if (!CollectionUtils.isEmpty(activeSessions)) {
             Subject subject = SecurityUtils.getSubject();
             for (Session activeSession : activeSessions) {
@@ -79,8 +88,15 @@ public class UserNamePasswordRealm extends AuthorizingRealm {
                     LoginUser sessionLoginUser = (LoginUser) simplePrincipalCollection.getPrimaryPrincipal();
                     //同一用户不同浏览器登录
                     if (loginId.equals(sessionLoginUser.getLoginId()) && PasswordHelper.md5(password, null, 3).equals(sessionLoginUser.getPassword())) {
-                        if (!subject.getSession().getId().equals(activeSession.getId())) {
-                            enterpriseCacheSessionDAO.delete(activeSession);
+                        if (!activeSession.getId().equals(subject.getSession().getId())) {
+//                            enterpriseCacheSessionDAO.delete(activeSession);
+                            sessionDAO.delete(activeSession);
+                        }
+                    }
+                    //同一浏览器不同用户登录
+                    else {
+                        if (activeSession.getId().equals(subject.getSession().getId())) {
+                            throw new RuntimeException("请先退出用户：" + sessionLoginUser.getUserName() + "后再登录");
                         }
                     }
                 }
